@@ -134,7 +134,7 @@ public:
 
     T& get(int index) const {
         if (index < 0 || index >= m_sizeList) {
-            throw std::out_of_range("Index out of range");
+            std::cerr << ("Index out of range");
         }
 
         int i = 0;
