@@ -7,7 +7,16 @@ template<typename T>
 class MyList {
 public:
     MyList() : m_head(nullptr), m_tail(nullptr), m_sizeList(0) {}
+    MyList(const MyList& list) : m_head(nullptr), m_tail(nullptr), m_sizeList(0) { 
+        operator=(list);
+    }
 
+    MyList(std::initializer_list<T> list) {
+        for (int i = 0;i < list.size();++i) {
+            push_back(*(list.begin() + i));
+        }
+        
+    }
     void push_back(const T& value) {
         Node* tmp = new Node(value);
         if (m_head == nullptr) {
@@ -108,11 +117,15 @@ public:
         m_sizeList--;
     }
 
-    void insert(int index, const T& value) {
-        if (index <= 0) {
+    void insert(size_t index, const T& value) {
+        if (index > m_sizeList) {
+            std::cerr << "Invalid index";
+            return;
+        }
+        if (index == 0) {
             push_front(value);
             return;
-        } else if (index >= m_sizeList) {
+        } else if (index == m_sizeList) {
             push_back(value);
             return;
         }
@@ -147,6 +160,24 @@ public:
         return current->data;
     }
 
+    bool empty() const {
+        if (!m_head) {
+            return true;
+        }
+        return false;
+    }
+
+    size_t size() const {
+        return m_sizeList;
+    }
+
+    void clear() {
+        while (m_head) {
+            Node* temp = m_head;
+            m_head = m_head->next;
+            delete temp;
+        }
+    }
     ~MyList() {
         Node* current = m_head;
         while (current) {
@@ -156,6 +187,26 @@ public:
         }
     }
 
+    T& operator[](size_t index) {
+        return get(index);
+    }
+    MyList& operator=(const MyList& list) {
+        if (this == &list) {
+            return *this;
+        }
+
+        clear();
+        Node* currentList = list.m_head;
+        while (currentList)
+        {
+            push_back(currentList->data);
+            currentList = currentList->next;
+        }
+        
+        return *this;
+    }
+
+
 private:
     struct Node {
         T data;
@@ -164,7 +215,7 @@ private:
 
         Node(const T& value) : data(value), next(nullptr), prev(nullptr) {}
     };
-
+private:
     Node* m_head;
     Node* m_tail;
     std::size_t m_sizeList;
